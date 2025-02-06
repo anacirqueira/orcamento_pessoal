@@ -41,9 +41,12 @@ h5 {
 }
 
 .btn {
-    background-color: unset;
+    background-color: #2178e3;
     border: 0;
+    border-radius: 10px;
     cursor: pointer;
+    color: #fff;
+    padding: 4px 9px;
 }
 
 .btn-redondo {
@@ -120,8 +123,7 @@ progress[value]::-moz-progress-bar {
 }
 
 #coluna .coluna-conteudo {
-    flex: 1;
-    
+    flex: 1;   
 }
 
 #conteudo .coluna-conteudo:first-child{
