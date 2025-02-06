@@ -169,3 +169,35 @@ progress[value]::-moz-progress-bar {
     color: #d01f1f;
 }
 
+.form-container {
+    margin-top: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.form-container .titulo-form {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.form {
+    display: flex;
+}
+
+.form .linha-form:not(:last-child) {
+    margin-right: 15px;
+}
+
+.linha-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.linha-form label {
+    margin-bottom: 2px;
+}
+
+.linha-form label, .linha-form select {
+    font-size: 0.9em;
+}
