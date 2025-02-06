@@ -4,6 +4,7 @@
         var formDespesa = document.getElementById('form-adicionar-despesa');
         return {
             receita: {
+                table: document.getElementById('tabela-receitas'),
                 form: formReceita,
                 campos: {
                     descricao: formReceita.querySelector('[name=descricao]'),
@@ -11,6 +12,7 @@
                 }
             },
             despesa: {
+                table: document.getElementById('tabela-despesas'),
                 form: formDespesa,
                 campos: {
                     descricao: formDespesa.querySelector('[name=descricao]'),
@@ -45,10 +47,18 @@
 
     var elementos = obterElementos();
 
+    var renderizarDespesas = function() {
+
+    }
+
+    var renderizarReceitas = function() {
+        
+    }
+
     var receitas = despesasStore.listar();
-    console.log(receitas);
+    renderizarReceitas();
     var despesas = receitasStore.listar();
-    console.log(despesas);
+    renderizarDespesas();
 
     elementos.receita.form.onsubmit = function(event) {
         event.preventDefault();
