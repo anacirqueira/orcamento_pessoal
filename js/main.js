@@ -47,12 +47,54 @@
 
     var elementos = obterElementos();
 
-    var renderizarDespesas = function() {
+    var agrupar = function(items, propriedade) {
+        return items.reduce(function(acumulador,item) {
+            (acumulador[item[propriedade]] = acumulador[item[propriedade]] || []).push(item);
+            return acumulador;
+        }, {});
+    }
+
+    var padLeft = function(numero, quantidade, caracter) {
+        return Array(quantidade-String(numero).length+1).join(caracter||'0')+numero;
+    }
+
+    var formatarData = function(data) {
+        var dataFormatada = data;
+        if (typeof(data) == 'string') {
+            dataFormatada = new Date(data);
+        }
+
+        return `${padLeft(dataFormatada.getDate(), 2)}/${padLeft(dataFormatada.getMonth(), 2)}`;
+    }
+
+    var renderizarReceita = function(receita) {
 
     }
 
-    var renderizarReceitas = function() {
+    var ordenarPorDataMaisRecente = function(a, b) {
+        if (new Date(b) < new Date(a)) {
+            return -1;
+        }
+        if (new Date(b) > new Date(a)) {
+            return 1;
+        }
+        return 0;    
+    }
+
+    var renderizarDespesas = function() {
         
+    }
+
+    var renderizarReceitas = function() {
+        var receitasAgrupadas = agrupar(receitas, 'data');
+        elementos.receita.tabela.innerHTML = '';
+        Object.keys(receitasAgrupadas)
+            .sort(ordenarPorDataMaisRecente)
+            .forEach(function(grupo) {
+                elementos.receita.tabela.innerHTML += `<tr>
+                    <td class="coluna-data" colspan="2">${formatarData(grupo)}</td>
+                </tr>`;
+            });
     }
 
     var receitas = despesasStore.listar();
