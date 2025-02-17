@@ -68,7 +68,13 @@
     }
 
     var renderizarReceita = function(receita) {
-
+        return `<tr>
+            <td class="coluna-descricao-transacao">
+                ${receita.descricao}
+                <p class="categoria-label">Receitas</p>
+            </td>
+            <td class="coluna-valor-transacao">${accounting.formatMoney(receita.valor, "R$ ", 2, '.', ',')}</td>
+        </tr>`
     }
 
     var ordenarPorDataMaisRecente = function(a, b) {
@@ -94,6 +100,9 @@
                 elementos.receita.tabela.innerHTML += `<tr>
                     <td class="coluna-data" colspan="2">${formatarData(grupo)}</td>
                 </tr>`;
+                receitasAgrupadas[grupo].forEach(function(receita) {
+                    elementos.receita.tabela.innerHTML += renderizarReceita(receita);
+                });
             });
     }
 
@@ -116,6 +125,7 @@
         receitas.push(receita);
         receitasStore.salvar(receitas);
         elementos.receita.form.reset();
+        renderizarReceitas();
 
         alert('Receita salva com sucesso!');
     }
