@@ -4,7 +4,7 @@
         var formDespesa = document.getElementById('form-adicionar-despesa');
         return {
             receita: {
-                table: document.getElementById('tabela-receitas'),
+                tabela: document.getElementById('tabela-receitas'),
                 form: formReceita,
                 campos: {
                     descricao: formReceita.querySelector('[name=descricao]'),
@@ -12,7 +12,7 @@
                 }
             },
             despesa: {
-                table: document.getElementById('tabela-despesas'),
+                tabela: document.getElementById('tabela-despesas'),
                 form: formDespesa,
                 campos: {
                     descricao: formDespesa.querySelector('[name=descricao]'),
@@ -20,7 +20,6 @@
                     categoria: formDespesa.querySelector('[name=categoria]')
                 }
             }
-
         };
     }
 
@@ -42,10 +41,46 @@
         }
     }
 
-    var despesasStore = storeGenerica('despesas');
     var receitasStore = storeGenerica('receitas');
+    var despesasStore = storeGenerica('despesas');
 
     var elementos = obterElementos();
+
+    var categorias = [
+        {
+            identificador: 'lazer',
+            descricao: 'Lazer',
+            previsto: 320
+        },
+        {
+            identificador: 'alimentacao',
+            descricao: 'Alimentação',
+            previsto: 320
+        },
+        {
+            identificador: 'moradia',
+            descricao: 'Moradia',
+            previsto: 320
+        },
+        {
+            identificador: 'transporte',
+            descricao: 'Transporte',
+            previsto: 320
+        }
+    ];
+
+    var criarOpcaoCategoria = function(categoria) {
+        var elemento = document.createElement('option');
+        elemento.innerHTML = categoria.descricao;
+        elemento.value = categoria.identificador;
+        return elemento;
+    }
+
+    var carregarSelectDeCategoria = function() {
+        categorias.forEach(function(categoria) {
+            elementos.despesa.form.categoria.appendChild(criarOpcaoCategoria(categoria));
+        })
+    }
 
     var agrupar = function(items, propriedade) {
         return items.reduce(function(acumulador,item) {
@@ -74,7 +109,7 @@
                 <p class="categoria-label">Receitas</p>
             </td>
             <td class="coluna-valor-transacao">${accounting.formatMoney(receita.valor, "R$ ", 2, '.', ',')}</td>
-        </tr>`
+        </tr>`;
     }
 
     var ordenarPorDataMaisRecente = function(a, b) {
@@ -87,8 +122,36 @@
         return 0;    
     }
 
+    var obterCategoria = function(identificador) {
+        return categorias.find(function(categoria) {
+            return categoria.identificador == identificador;
+        })
+    }
+
+    var renderizarDespesa = function(despesa) {
+        var descricaoCategoria = obterCategoria(despesa.categoria).descricao;
+        return `<tr>
+            <td class="coluna-descricao-transacao">
+                ${despesa.descricao}
+                <p class="categoria-label">${descricaoCategoria}</p>
+            </td>
+            <td class="coluna-valor-transacao">${accounting.formatMoney(despesa.valor, "R$ ", 2, '.', ',')}</td>
+        </tr>`;
+    }
+
     var renderizarDespesas = function() {
-        
+        var despesasAgrupadas = agrupar(despesas, 'data');
+        elementos.despesa.tabela.innerHTML = '';
+        Object.keys(despesasAgrupadas)
+            .sort(ordenarPorDataMaisRecente)
+            .forEach(function(grupo) {
+                elementos.despesa.tabela.innerHTML += `<tr>
+                    <td class="coluna-data" colspan="2">${formatarData(grupo)}</td>
+                </tr>`;
+                despesasAgrupadas[grupo].forEach(function(despesa) {
+                    elementos.despesa.tabela.innerHTML += renderizarDespesa(despesa);
+                });
+            });
     }
 
     var renderizarReceitas = function() {
@@ -106,10 +169,11 @@
             });
     }
 
-    var receitas = despesasStore.listar();
+    var receitas = receitasStore.listar();
     renderizarReceitas();
-    var despesas = receitasStore.listar();
+    var despesas = despesasStore.listar();
     renderizarDespesas();
+    carregarSelectDeCategoria();
 
     elementos.receita.form.onsubmit = function(event) {
         event.preventDefault();
@@ -144,6 +208,7 @@
         despesas.push(despesa);
         despesasStore.salvar(despesas);
         elementos.despesa.form.reset();
+        renderizarDespesas();
 
         alert('Despesa salva com sucesso!');
     }
