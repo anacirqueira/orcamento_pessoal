@@ -3,6 +3,12 @@
         var formReceita = document.getElementById('form-adicionar-receita');
         var formDespesa = document.getElementById('form-adicionar-despesa');
         return {
+            cabecalho: {
+                saldo: document.getElementById('saldo'),
+                principal: document.getElementById('progresso-principal'),
+                categorias: document.getElementById('progresso-categoria'),
+                visaoGeral: document.getElementById('visao-geral')
+            },
             receita: {
                 tabela: document.getElementById('tabela-receitas'),
                 form: formReceita,
@@ -55,19 +61,21 @@
         {
             identificador: 'alimentacao',
             descricao: 'Alimentação',
-            previsto: 320
+            previsto: 800
         },
         {
             identificador: 'moradia',
             descricao: 'Moradia',
-            previsto: 320
+            previsto: 700
         },
         {
             identificador: 'transporte',
             descricao: 'Transporte',
-            previsto: 320
+            previsto: 500
         }
     ];
+
+    var previstoDeReceita = 4000;
 
     var criarOpcaoCategoria = function(categoria) {
         var elemento = document.createElement('option');
@@ -79,7 +87,7 @@
     var carregarSelectDeCategoria = function() {
         categorias.forEach(function(categoria) {
             elementos.despesa.form.categoria.appendChild(criarOpcaoCategoria(categoria));
-        })
+        });
     }
 
     var agrupar = function(items, propriedade) {
@@ -169,10 +177,54 @@
             });
     }
 
+    var calcularTotais = function() {
+       var totaisDespesas = despesas.reduce(function(acumulador, despesaAtual) {
+            if (!acumulador.hasOwnProperty(despesaAtual.categoria)) {
+                acumulador[despesaAtual.categoria] = 0;
+            }
+
+            acumulador[despesaAtual.categoria] += Number.parseFloat(despesaAtual.valor);
+            acumulador.despesas += Number.parseFloat(despesaAtual.valor);
+            return acumulador;
+       }, { despesas: 0 });
+       
+       var totalReceita = receitas.reduce(function(acumulador, receita) {
+            acumulador += Number.parseFloat(receita.valor);
+       }, 0);
+
+       return Object.assign({
+            receitas: totalReceita,
+            total: totalReceita - totaisDespesas.despesas
+       }, totaisDespesas);
+    } 
+
+    var renderizarColunaPrincipal = function(totais) {
+        
+    }    
+    var renderizarColunaCategorias = function(totais) {
+        
+    }
+    var renderizarVisaoGeral = function(totais) {
+        
+    }    
+
+    var renderizarCabecalho = function() {
+        var totais = calcularTotais();
+
+        renderizarColunaPrincipal(totais);
+
+        renderizarColunaCategorias(totais);
+
+        renderizarVisaoGeral(totais);
+
+        elementos.cabecalho.saldo.innerHTML = accounting.formatMoney(totais.total, 'R$ ', 2, '.', ',');
+    }
+
     var receitas = receitasStore.listar();
     renderizarReceitas();
     var despesas = despesasStore.listar();
     renderizarDespesas();
+    renderizarCabecalho();
     carregarSelectDeCategoria();
 
     elementos.receita.form.onsubmit = function(event) {
