@@ -82,8 +82,12 @@ h5 {
     padding: 10px;
 }
 
+#visao-geral .visao-geral-container h5 {
+    margin-bottom: 6px;
+}
+
 .ofuscado {
-    opacity: 0.8;
+    opacity: 1.0;
 }
 
 .texto-grande {

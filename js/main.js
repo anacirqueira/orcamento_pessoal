@@ -190,22 +190,79 @@
        
        var totalReceita = receitas.reduce(function(acumulador, receita) {
             acumulador += Number.parseFloat(receita.valor);
+            return acumulador;
        }, 0);
 
        return Object.assign({
             receitas: totalReceita,
             total: totalReceita - totaisDespesas.despesas
        }, totaisDespesas);
-    } 
+    }
+    
+    var renderizarProgressoCategoria = function(categoria, totais) {
+        var totalCategoria = 0;
+        if (totais.hasOwnProperty(categoria.identificador)) {
+            totalCategoria = totais[categoria.identificador];
+        }
+
+        return `<div>
+            <h5><span class="ofuscado">${categoria.descricao} ${accounting.formatMoney(totalCategoria, 'R$ ', 2, '.', ',')}</h5>
+            <progress value="${totalCategoria}" max="${categoria.previsto}"></progress>
+        </div>`
+    }  
 
     var renderizarColunaPrincipal = function(totais) {
-        
-    }    
-    var renderizarColunaCategorias = function(totais) {
-        
+        var previstoDespesas = categorias.reduce(function(acumulador, categoria) {
+            acumulador += categoria.previsto;
+            return acumulador;
+        })
+
+        elementos.cabecalho.principal.innerHTML = '';
+
+        elementos.cabecalho.principal.innerHTML += renderizarProgressoCategoria({
+            descricao: 'Receitas',
+            identificador: 'receitas',
+            previsto: previstoDeReceita
+        }, totais);
+
+        elementos.cabecalho.principal.innerHTML += renderizarProgressoCategoria({
+            descricao: 'Despesas',
+            identificador: 'despesas',
+            previsto: previstoDespesas
+        }, totais);;
     }
+
+    var renderizarColunaCategorias = function(totais) {
+        elementos.cabecalho.categorias.innerHTML = '';
+        categorias.forEach(function(categoria) {
+            elementos.cabecalho.categorias.innerHTML += renderizarProgressoCategoria(categoria, totais);
+        })
+    }
+
+    var renderizarItemVisaoGeral = function(item) {
+        return `<div class="visao-geral-container">
+            <h5><span class="ofuscado">${item.descricao}</h5>
+            <span class="texto-grande">${accounting.formatMoney(item.valor, 'R$ ', 2, '.', ',')}</span>
+        </div>`
+    }
+
     var renderizarVisaoGeral = function(totais) {
-        
+        elementos.cabecalho.visaoGeral.innerHTML = '';
+
+        elementos.cabecalho.visaoGeral.innerHTML += renderizarItemVisaoGeral({
+            descricao: 'Receitas',
+            valor: totais.receitas
+        });
+
+        elementos.cabecalho.visaoGeral.innerHTML += renderizarItemVisaoGeral({
+            descricao: 'Despesas',
+            valor: totais.despesas
+        });
+
+        elementos.cabecalho.visaoGeral.innerHTML += renderizarItemVisaoGeral({
+            descricao: 'Economia',
+            valor: totais.total
+        });
     }    
 
     var renderizarCabecalho = function() {
@@ -242,6 +299,7 @@
         receitasStore.salvar(receitas);
         elementos.receita.form.reset();
         renderizarReceitas();
+        renderizarCabecalho();
 
         alert('Receita salva com sucesso!');
     }
@@ -261,6 +319,7 @@
         despesasStore.salvar(despesas);
         elementos.despesa.form.reset();
         renderizarDespesas();
+        renderizarCabecalho();
 
         alert('Despesa salva com sucesso!');
     }
