@@ -29,7 +29,36 @@
         };
     }
 
-    const storeGenerica = chave => {
+    class storeGenerica {
+        constructor(chave) {
+            this.chave = chave;
+        }
+
+        listar = () => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const itens = localStorage.getItem(this.chave);
+
+                    if (!itens) {
+                        resolve([]);
+                        return;
+                    }
+                    resolve(JSON.parse(itens))
+                }, 2000);
+            })
+        }
+
+        salvar = () => {
+            return new Promise(function(resolve) {
+                setTimeout(() => {
+                    localStorage.setItem(this.chave, JSON.stringify(items));
+                    resolve();
+                }, 2000);
+            })
+        }
+    }
+
+    /* const storeGenerica = chave => {
         return {
             listar: () => {
                 return new Promise((resolve, reject) => {
@@ -54,10 +83,10 @@
                 })
             }
         }
-    }
+    } */
 
-    const receitasStore = storeGenerica('receitas');
-    const despesasStore = storeGenerica('despesas');
+    const receitasStore = new storeGenerica('receitas');
+    const despesasStore = new storeGenerica('despesas');
 
     const elementos = obterElementos();
 
