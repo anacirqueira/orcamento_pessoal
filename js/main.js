@@ -1,4 +1,4 @@
-(function main() {
+(async function main() {
     const obterElementos = function() {
         const formReceita = document.getElementById('form-adicionar-receita');
         const formDespesa = document.getElementById('form-adicionar-despesa');
@@ -29,10 +29,10 @@
         };
     }
 
-    const storeGenerica = function (chave) {
+    const storeGenerica = chave => {
         return {
-            listar: function() {
-                return new Promise(function(resolve, reject) {
+            listar: () => {
+                return new Promise((resolve, reject) => {
                     setTimeout(function() {
                         const itens = localStorage.getItem(chave);
 
@@ -300,15 +300,14 @@
         renderizarDespesas();
     })
 
-    Promise.all([
+    await Promise.all([
         receitasPromise,
         despesasPromise
-    ]).then(function() {
-        renderizarCabecalho();
-        carregarSelectDeCategoria();
-    });
+    ]);
+    renderizarCabecalho();
+    carregarSelectDeCategoria();
 
-    elementos.receita.form.onsubmit = function(event) {
+    elementos.receita.form.onsubmit = async function(event) {
         event.preventDefault();
 
         const receita = {
@@ -321,17 +320,16 @@
         });
 
         receitas.push(receita);
-        receitasStore
-            .salvar(receitas)
-            .then(function() {
-                elementos.receita.form.reset();
-                renderizarReceitas();
-                renderizarCabecalho();
-                alert('Receita salva com sucesso!');
-            }).catch(function() {
-                alert('Ocorreu um erro ao salvar a receita');
-            });
-    }
+        try {
+            await receitasStore.salvar(receitas)
+            elementos.receita.form.reset();
+            renderizarReceitas();
+            renderizarCabecalho();
+            alert('Receita salva com sucesso!');
+        } catch {
+            alert('Ocorreu um erro ao salvar a receita');
+        }
+    }    
 
     elementos.despesa.form.onsubmit = function(event) {
         event.preventDefault();
