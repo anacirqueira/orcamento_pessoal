@@ -6,11 +6,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {
-    "serve": "14.2.4"
+    "@types/copy-webpack-plugin": "^8.0.1",
+    "copy-webpack-plugin": "^6.4.1",
+    "electron-to-chromium": "^1.5.190",
+    "normalize-path": "^3.0.0",
+    "tinyglobby": "^0.2.14",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./node_modules/.bin/serve"
+    "start": "webpack-dev-server --open",
+    "build": "webpack",
+    "serve": "webpack serve"
   },
   "repository": {
     "type": "git",
